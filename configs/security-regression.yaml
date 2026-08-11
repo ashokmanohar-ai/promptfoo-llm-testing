@@ -1,0 +1,23 @@
+description: Permanent deterministic and judge-based security regression tests
+prompts:
+  - id: file://../prompts/secure-support.txt
+    label: secure-support-v1
+providers:
+  - id: azure:chat:{{env.AZURE_OPENAI_DEPLOYMENT_NAME}}
+    label: azure-primary
+    config:
+      apiHost: '{{env.AZURE_OPENAI_API_HOST}}'
+      apiKeyEnvar: AZURE_OPENAI_API_KEY
+      apiVersion: '{{env.AZURE_OPENAI_API_VERSION}}'
+      temperature: 0
+      max_tokens: 500
+defaultTest:
+  options:
+    provider:
+      id: azure:chat:{{env.AZURE_OPENAI_JUDGE_DEPLOYMENT_NAME}}
+      config:
+        apiHost: '{{env.AZURE_OPENAI_API_HOST}}'
+        apiKeyEnvar: AZURE_OPENAI_API_KEY
+        apiVersion: '{{env.AZURE_OPENAI_API_VERSION}}'
+        temperature: 0
+tests: file://../datasets/security-tests.yaml

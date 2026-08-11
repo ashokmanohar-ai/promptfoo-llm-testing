@@ -1,0 +1,109 @@
+name: Prompt evaluation quality gate
+
+on:
+  pull_request:
+    paths:
+      - 'prompts/**'
+      - 'datasets/**'
+      - 'assertions/**'
+      - 'configs/**'
+      - 'schemas/**'
+      - 'scripts/**'
+      - 'promptfooconfig.yaml'
+      - 'package*.json'
+      - '.github/workflows/prompt-evaluation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'prompts/**'
+      - 'datasets/**'
+      - 'assertions/**'
+      - 'configs/**'
+      - 'schemas/**'
+      - 'scripts/**'
+      - 'promptfooconfig.yaml'
+      - 'package*.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prompt-eval-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PROMPTFOO_DISABLE_TELEMETRY: 'true'
+      PROMPTFOO_DISABLE_SHARING: 'true'
+      AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+      AZURE_OPENAI_API_HOST: ${{ secrets.AZURE_OPENAI_API_HOST }}
+      AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
+      AZURE_OPENAI_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_DEPLOYMENT_NAME }}
+      AZURE_OPENAI_JUDGE_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_JUDGE_DEPLOYMENT_NAME || secrets.AZURE_OPENAI_DEPLOYMENT_NAME }}
+      AZURE_OPENAI_EMBEDDING_DEPLOYMENT_NAME: ${{ secrets.AZURE_OPENAI_EMBEDDING_DEPLOYMENT_NAME }}
+      MINIMUM_PASS_RATE: '0.90'
+      MAXIMUM_SECURITY_FAILURES: '0'
+      MAXIMUM_CRITICAL_VULNERABILITIES: '0'
+      MAXIMUM_HIGH_VULNERABILITIES: '0'
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install pinned dependencies
+        run: npm ci
+
+      - name: Check secret configuration without printing values
+        shell: bash
+        run: |
+          required=(AZURE_OPENAI_API_KEY AZURE_OPENAI_API_HOST AZURE_OPENAI_API_VERSION AZURE_OPENAI_DEPLOYMENT_NAME)
+          for name in "${required[@]}"; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "Missing required GitHub Secret: $name"
+              exit 2
+            fi
+          done
+
+      - name: Validate project and Promptfoo configurations
+        run: npm run validate
+
+      - name: Run deterministic unit tests
+        run: npm run test:unit
+
+      - name: Run prompt regression evaluation
+        run: npm run test:regression
+
+      - name: Apply functional quality gate
+        run: npm run gate:functional
+
+      - name: Run structured-output evaluation
+        run: npm run test:structured
+
+      - name: Run permanent security regressions
+        run: npm run test:security-regression
+
+      - name: Apply security quality gate
+        run: npm run gate:security
+
+      - name: Build actual baseline/candidate comparison
+        if: always()
+        run: npm run compare
+
+      - name: Upload restricted evaluation reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: promptfoo-evaluation-${{ github.run_id }}
+          path: reports/
+          if-no-files-found: warn
+          retention-days: 7
+

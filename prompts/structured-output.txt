@@ -1,0 +1,10 @@
+Classify the customer-support request below.
+
+Return only one JSON object with exactly these properties:
+- "category": one of "billing", "account", "technical", "other"
+- "priority": one of "low", "medium", "high"
+- "requires_human": boolean
+
+Do not add Markdown fences, explanations, or additional properties.
+
+Request: {{request}}

@@ -1,0 +1,6 @@
+Summarize the following text in no more than {{max_words}} words. Preserve the central fact, avoid speculation, and do not add information that is absent from the source.
+
+Source:
+{{document}}
+
+Summary:

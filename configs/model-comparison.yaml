@@ -1,0 +1,39 @@
+description: Compare identical prompt and tests across two Azure deployments
+prompts:
+  - id: file://../prompts/customer-support-v2.txt
+    label: fixed-support-prompt-v2
+providers:
+  - id: azure:chat:{{env.AZURE_OPENAI_DEPLOYMENT_MODEL_A}}
+    label: model-a
+    config:
+      apiHost: '{{env.AZURE_OPENAI_API_HOST}}'
+      apiKeyEnvar: AZURE_OPENAI_API_KEY
+      apiVersion: '{{env.AZURE_OPENAI_API_VERSION}}'
+      temperature: 0
+      max_tokens: 500
+  - id: azure:chat:{{env.AZURE_OPENAI_DEPLOYMENT_MODEL_B}}
+    label: model-b
+    config:
+      apiHost: '{{env.AZURE_OPENAI_API_HOST}}'
+      apiKeyEnvar: AZURE_OPENAI_API_KEY
+      apiVersion: '{{env.AZURE_OPENAI_API_VERSION}}'
+      temperature: 0
+      max_tokens: 500
+defaultTest:
+  options:
+    provider:
+      id: azure:chat:{{env.AZURE_OPENAI_JUDGE_DEPLOYMENT_NAME}}
+      config:
+        apiHost: '{{env.AZURE_OPENAI_API_HOST}}'
+        apiKeyEnvar: AZURE_OPENAI_API_KEY
+        apiVersion: '{{env.AZURE_OPENAI_API_VERSION}}'
+        temperature: 0
+  assert:
+    - type: latency
+      threshold: 8000
+      metric: latency
+    # Cost passes only when the provider returns cost metadata. Calibrate the threshold.
+    - type: cost
+      threshold: 0.05
+      metric: estimated-cost
+tests: file://../datasets/customer-support.yaml

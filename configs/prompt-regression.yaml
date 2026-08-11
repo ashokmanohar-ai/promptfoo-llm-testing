@@ -1,0 +1,29 @@
+description: Baseline-vs-candidate prompt regression on one Azure deployment
+prompts:
+  - id: file://../prompts/customer-support-v1.txt
+    label: baseline-support-v1
+  - id: file://../prompts/customer-support-v2.txt
+    label: candidate-support-v2
+providers:
+  - id: azure:chat:{{env.AZURE_OPENAI_DEPLOYMENT_NAME}}
+    label: azure-fixed-model-temperature-0
+    config:
+      apiHost: '{{env.AZURE_OPENAI_API_HOST}}'
+      apiKeyEnvar: AZURE_OPENAI_API_KEY
+      apiVersion: '{{env.AZURE_OPENAI_API_VERSION}}'
+      temperature: 0
+      max_tokens: 500
+defaultTest:
+  options:
+    provider:
+      id: azure:chat:{{env.AZURE_OPENAI_JUDGE_DEPLOYMENT_NAME}}
+      config:
+        apiHost: '{{env.AZURE_OPENAI_API_HOST}}'
+        apiKeyEnvar: AZURE_OPENAI_API_KEY
+        apiVersion: '{{env.AZURE_OPENAI_API_VERSION}}'
+        temperature: 0
+  assert:
+    - type: latency
+      threshold: 8000
+      metric: latency
+tests: file://../datasets/regression-tests.yaml

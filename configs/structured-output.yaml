@@ -1,0 +1,14 @@
+description: JSON and JSON Schema conformance evaluation
+prompts:
+  - id: file://../prompts/structured-output.txt
+    label: support-ticket-classifier
+providers:
+  - id: azure:chat:{{env.AZURE_OPENAI_DEPLOYMENT_NAME}}
+    label: azure-primary
+    config:
+      apiHost: '{{env.AZURE_OPENAI_API_HOST}}'
+      apiKeyEnvar: AZURE_OPENAI_API_KEY
+      apiVersion: '{{env.AZURE_OPENAI_API_VERSION}}'
+      temperature: 0
+      max_tokens: 200
+tests: file://../datasets/structured-output.yaml

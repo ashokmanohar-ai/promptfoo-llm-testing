@@ -1,0 +1,14 @@
+node_modules/
+.env
+.env.*
+!.env.example
+.promptfoo/
+promptfoo.db
+reports/*
+!reports/.gitkeep
+!reports/README.md
+redteam.yaml
+!configs/redteam.yaml
+*.log
+.DS_Store
+coverage/

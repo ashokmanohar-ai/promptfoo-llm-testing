@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["category", "priority", "requires_human"],
+  "properties": {
+    "category": { "enum": ["billing", "account", "technical", "other"] },
+    "priority": { "enum": ["low", "medium", "high"] },
+    "requires_human": { "type": "boolean" }
+  }
+}

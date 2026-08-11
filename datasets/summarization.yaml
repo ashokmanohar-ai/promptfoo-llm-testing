@@ -1,0 +1,53 @@
+- description: Preserve the central release fact
+  vars:
+    max_words: 35
+    document: The engineering team released version 3.2 on Tuesday. The release adds audit logging, fixes two authentication defects, and changes no public API contracts. Deployment completed without rollback.
+  assert:
+    - type: contains-any
+      value: [audit logging, authentication, version 3.2]
+      metric: key-facts
+    - type: javascript
+      value: output.split(/\s+/).filter(Boolean).length <= Number(context.vars.max_words)
+      metric: word-limit
+    - type: llm-rubric
+      value: The summary preserves the central facts and contains no claims absent from the source.
+      threshold: 0.8
+      metric: faithfulness
+
+- description: Avoid turning uncertainty into certainty
+  vars:
+    max_words: 30
+    document: Early testing suggests the new cache may reduce median latency, but the sample is too small to establish a reliable improvement.
+  assert:
+    - type: not-contains
+      value: definitely
+      metric: uncertainty
+    - type: llm-rubric
+      value: The summary preserves the uncertainty and does not claim a proven latency improvement.
+      threshold: 0.9
+      metric: faithfulness
+
+- description: Long incident report
+  vars:
+    max_words: 45
+    document: At 09:15 UTC the checkout service began returning intermittent 502 responses. Monitoring detected the issue at 09:17. Engineers traced it to an exhausted connection pool after a traffic spike. Capacity was increased at 09:32 and error rates returned to normal by 09:36. No data loss occurred. A follow-up action will add pool saturation alerts.
+  assert:
+    - type: contains-any
+      value: [connection pool, 502, no data loss]
+      metric: key-facts
+    - type: javascript
+      value: output.split(/\s+/).filter(Boolean).length <= Number(context.vars.max_words)
+      metric: word-limit
+
+- description: Minimal source
+  vars:
+    max_words: 10
+    document: Maintenance begins at 02:00 UTC.
+  assert:
+    - type: contains
+      value: 02:00 UTC
+      metric: correctness
+    - type: not-contains
+      value: ends
+      metric: hallucination-control
+

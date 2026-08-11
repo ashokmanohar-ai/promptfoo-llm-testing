@@ -1,0 +1,35 @@
+{
+  "name": "promptfoo-llm-testing",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Production-style LLM evaluation, prompt regression, model comparison, quality gates, and red teaming with Promptfoo and Azure OpenAI.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.22.0"
+  },
+  "scripts": {
+    "validate": "node scripts/validate-project.mjs && promptfoo validate config -c promptfooconfig.yaml configs/basic-evaluation.yaml configs/prompt-regression.yaml configs/model-comparison.yaml configs/parameter-comparison.yaml configs/rag-evaluation.yaml configs/structured-output.yaml configs/security-regression.yaml configs/redteam.yaml",
+    "test:unit": "node --test test/*.test.mjs",
+    "test:basic": "promptfoo eval -c configs/basic-evaluation.yaml --no-cache -o reports/basic-results.json -o reports/basic-report.html",
+    "test:regression": "promptfoo eval -c configs/prompt-regression.yaml --no-cache -o reports/regression-results.json -o reports/regression-results.csv -o reports/regression-report.html",
+    "test:models": "promptfoo eval -c configs/model-comparison.yaml --no-cache -o reports/model-comparison-results.json -o reports/model-comparison-report.html",
+    "test:parameters": "promptfoo eval -c configs/parameter-comparison.yaml --no-cache -o reports/parameter-comparison-results.json -o reports/parameter-comparison-report.html",
+    "test:rag": "promptfoo eval -c configs/rag-evaluation.yaml --no-cache -o reports/rag-results.json -o reports/rag-report.html",
+    "test:structured": "promptfoo eval -c configs/structured-output.yaml --no-cache -o reports/structured-results.json -o reports/structured-report.html",
+    "test:security-regression": "promptfoo eval -c configs/security-regression.yaml --no-cache -o reports/security-regression-results.json -o reports/security-regression-report.html",
+    "test:redteam": "npm run redteam:generate && npm run redteam:eval",
+    "redteam:generate": "promptfoo redteam generate -c configs/redteam.yaml -o reports/generated-redteam.yaml",
+    "redteam:eval": "promptfoo redteam eval -c reports/generated-redteam.yaml -o reports/redteam-results.json -o reports/redteam-report.html",
+    "redteam:report": "promptfoo redteam report",
+    "gate:functional": "node scripts/quality-gate.mjs reports/regression-results.json functional",
+    "gate:security": "node scripts/quality-gate.mjs reports/security-regression-results.json security",
+    "compare": "node scripts/compare-results.mjs reports/regression-results.json reports/regression-comparison.md",
+    "view": "promptfoo view",
+    "test": "npm run validate && npm run test:unit && npm run test:basic && npm run test:regression && npm run test:models && npm run test:parameters && npm run test:rag && npm run test:structured && npm run test:security-regression"
+  },
+  "dependencies": {
+    "dotenv": "17.2.1",
+    "promptfoo": "0.122.0",
+    "yaml": "2.8.1"
+  }
+}
