@@ -1,0 +1,36 @@
+cff-version: 1.2.0
+message: "If you use or reference this work, please cite it using the metadata below."
+title: "Prompt Testing as Software Testing: A Quality Engineering Framework for Prompt-Driven Applications"
+type: article
+authors:
+  - family-names: Manohar
+    given-names: Ashok Kumar
+version: 1.0.0
+date-released: 2026-09-05
+url: "https://github.com/ashokmanohar-ai/promptfoo-llm-testing/blob/main/WHITEPAPER.md"
+repository-code: "https://github.com/ashokmanohar-ai/promptfoo-llm-testing"
+license: MIT
+keywords:
+  - Prompt Testing
+  - Prompt Engineering
+  - Quality Engineering
+  - AI Quality Engineering
+  - LLM Evaluation
+  - Prompt Regression Testing
+  - Generative AI
+  - Promptfoo
+  - AI Red Teaming
+  - Prompt Injection
+  - CI/CD
+  - Structured Output
+  - LLM-as-a-Judge
+  - Regression Testing
+  - AI Governance
+abstract: >-
+  A practical Quality Engineering framework for treating production prompts as
+  versioned, testable and governable software artifacts. The work covers golden
+  datasets, deterministic-first assertions, structured-output contracts,
+  semantic evaluation, LLM-as-a-Judge governance, prompt regression testing,
+  model and parameter comparison, RAG and tool-use prompt tests, prompt
+  injection, permanent security regressions, red teaming, CI/CD quality gates,
+  observability, production feedback and prompt change governance.
