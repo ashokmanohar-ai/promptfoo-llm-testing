@@ -11,6 +11,16 @@ The central engineering principle is simple:
 
 > Prompts are versioned, testable software artifacts—not unreviewed text copied into production.
 
+## 📄 Technical White Paper
+
+**[Prompt Testing as Software Testing: A Quality Engineering Framework for Prompt-Driven Applications](WHITEPAPER.md)**
+
+A practitioner-focused white paper for treating prompts as versioned, testable and governable production software artifacts. It covers golden datasets, deterministic-first assertions, structured-output contracts, semantic evaluation, LLM-as-a-Judge governance, baseline-vs-candidate regression, model and parameter comparison, RAG and tool-use prompt testing, prompt injection, permanent security regressions, red teaming, CI/CD quality gates, observability and production feedback.
+
+> **Core principle:** a production prompt should be engineered like production code—versioned, reviewed, tested against representative evidence, protected by regression and security gates, and changed only with an explainable release decision.
+
+Citation metadata is available in [`CITATION.cff`](CITATION.cff), with the publication index in [`publications/README.md`](publications/README.md).
+
 ## Verified compatibility
 
 This repository was verified on **11 August 2026** against:
